@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
+import Button from "../../ui/Button";
 
 const TableRow = styled.div`
   display: grid;
@@ -69,9 +70,14 @@ function CabinRow({ cabin }) {
       <p>Fits up to {maxCapacity} guests</p>
       <Price>{formatCurrency(regularPrice)}</Price>
       <Discount>{formatCurrency(discount)}</Discount>
-      <button onClick={() => mutate(id)} disabled={isDeleting}>
+      <Button
+        size="small"
+        variation="secondary"
+        onClick={() => mutate(id)}
+        disabled={isDeleting}
+      >
         Delete
-      </button>
+      </Button>
     </TableRow>
   );
 }
