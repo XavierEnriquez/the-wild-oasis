@@ -10,6 +10,17 @@ const Row = styled.div`
       align-items: center;
       gap: 1rem;
     `}
+  ${(props) =>
+    props.type === "vertical" &&
+    css`
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    `}
 `;
+
+Row.defaultProps = {
+  type: "vertical",
+};
 
 export default Row;
