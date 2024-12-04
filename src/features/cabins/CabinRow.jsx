@@ -8,7 +8,7 @@ import { formatCurrency } from "../../utils/helpers";
 import { deleteCabin } from "../../services/apiCabins";
 import Button from "../../ui/Button";
 import ButtonGroup from "../../ui/ButtonGroup";
-import UpdateCabinForm from "./CreateEditCabinForm";
+import CreateEditCabinForm from "./CreateEditCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -100,7 +100,7 @@ function CabinRow({ cabin }) {
           </Button>
         </ButtonGroup>
       </TableRow>
-      {showForm && <UpdateCabinForm toEdit="" />}
+      {showForm && <CreateEditCabinForm cabinToEdit={cabin} />}
     </>
   );
 }
