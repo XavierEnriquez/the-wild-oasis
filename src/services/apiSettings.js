@@ -1,6 +1,6 @@
 import supabase from "./supabase";
 
-export async function getSettings() {
+export async function getSettingsFn() {
   const { data, error } = await supabase.from("settings").select("*").single();
 
   if (error) {
@@ -11,7 +11,7 @@ export async function getSettings() {
 }
 
 // We expect a newSetting object that looks like {setting: newValue}
-export async function updateSetting(newSetting) {
+export async function updateSettingFn(newSetting) {
   const { data, error } = await supabase
     .from("settings")
     .update(newSetting)
