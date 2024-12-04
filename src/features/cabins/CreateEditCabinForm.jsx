@@ -1,9 +1,8 @@
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
-import toast from "react-hot-toast";
 
-import { createEditCabin } from "../../services/apiCabins";
+import { useCreateCabin } from "./useCreateCabin";
+import { useEditCabin } from "./useEditCabin";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
@@ -23,28 +22,8 @@ function CreateEditCabinForm({ cabinToEdit = {} }) {
 
   const { errors } = formState;
 
-  const queryClient = useQueryClient();
-
-  // useMutation & mutate are React Query functions
-  const { mutate: createCabin, isLoading: isCreating } = useMutation({
-    mutationFn: createEditCabin,
-    onSuccess: () => {
-      toast.success("New cabin succesfully added");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
-
-  const { mutate: editCabin, isLoading: isEditing } = useMutation({
-    mutationFn: ({ editData, id }) => createEditCabin(editData, id),
-    onSuccess: () => {
-      toast.success("Cabin succesfully edited");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  const { createCabin, isCreating } = useCreateCabin();
+  const { editCabin, isEditing } = useEditCabin();
 
   const isProcessing = isCreating || isEditing;
 
@@ -52,8 +31,19 @@ function CreateEditCabinForm({ cabinToEdit = {} }) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
 
     if (isEditSession)
-      editCabin({ editData: { ...data, image }, id: toEditId });
-    else createCabin({ ...data, image: data.image[0] });
+      editCabin(
+        { editData: { ...data, image }, id: toEditId },
+        {
+          onSuccess: () => reset(),
+        }
+      );
+    else
+      createCabin(
+        { ...data, image: data.image[0] },
+        {
+          onSuccess: () => reset(),
+        }
+      );
   }
 
   function onError(error) {
@@ -146,7 +136,9 @@ function CreateEditCabinForm({ cabinToEdit = {} }) {
         <Button variation="secondary" type="reset" disabled={isProcessing}>
           Cancel
         </Button>
-        <Button disabled={isProcessing}>Update cabin</Button>
+        <Button disabled={isProcessing}>
+          {isEditSession ? "Update cabin" : "Add cabin"}
+        </Button>
       </FormRow>
     </Form>
   );
