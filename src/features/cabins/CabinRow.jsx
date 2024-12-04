@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import toast from "react-hot-toast";
 
 import { formatCurrency } from "../../utils/helpers";
-import { deleteCabin } from "../../services/apiCabins";
+import { useDeleteCabin } from "./useDeleteCabin";
 import Button from "../../ui/Button";
 import ButtonGroup from "../../ui/ButtonGroup";
 import CreateEditCabinForm from "./CreateEditCabinForm";
@@ -50,6 +48,7 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
+  const { isDeleting, deleteCabin } = useDeleteCabin();
   const [showForm, setShowForm] = useState(false);
   const {
     id: cabinId,
@@ -60,20 +59,6 @@ function CabinRow({ cabin }) {
     image,
   } = cabin;
 
-  const queryClient = useQueryClient();
-  const { isLoading: isDeleting, mutate } = useMutation({
-    mutationFn: deleteCabin,
-    onSuccess: () => {
-      toast.success("Cabin succesfully deleted");
-
-      // invalidate the "cabins" cache to force an api call refresh
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-    },
-    onError: (err) => toast.error(err.message),
-  });
-
   return (
     <>
       <TableRow>
@@ -81,7 +66,11 @@ function CabinRow({ cabin }) {
         <Cabin>{name}</Cabin>
         <p>Fits up to {maxCapacity} guests</p>
         <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{formatCurrency(discount)}</Discount>
+        {discount ? (
+          <Discount>{formatCurrency(discount)}</Discount>
+        ) : (
+          <span>&mdash;</span>
+        )}
         <ButtonGroup>
           <Button
             size="small"
@@ -93,7 +82,7 @@ function CabinRow({ cabin }) {
           <Button
             size="small"
             variation="secondary"
-            onClick={() => mutate(cabinId)}
+            onClick={() => deleteCabin(cabinId)}
             disabled={isDeleting}
           >
             Delete
