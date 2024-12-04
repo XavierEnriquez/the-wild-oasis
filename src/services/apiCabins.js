@@ -18,7 +18,7 @@ export async function deleteCabinFn(id) {
 }
 
 // function receives either the newcabin data or an id for the cabin to be edited
-export async function createEditCabin(newCabin, id) {
+export async function createUpdateCabinFn(newCabin, id) {
   // Checking for existing image path
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
 
@@ -56,7 +56,11 @@ export async function createEditCabin(newCabin, id) {
     throw new Error("There was an error processing cabin");
   }
 
-  // if new entry succesfull then the image file is uploaded to the image storage bucket
+  // 2 UPLOAD image
+  // for cabin edits or cabin duplicates, if there is an image path, return function and to avoid uploading the image again to the database
+  if (hasImagePath) return data;
+
+  // if new entry is succesfull and ther is no existing image path, then the image file is uploaded to the image storage bucket
   const { error: storageError } = await supabase.storage
     .from("cabin-images")
     .upload(imageName, newCabin.image);
