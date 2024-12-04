@@ -1,15 +1,15 @@
 import styled, { css } from "styled-components";
 
 const sizes = {
-  md: css`
+  small: css`
     max-width: 60rem;
     margin-right: auto;
   `,
-  lg: css`
+  medium: css`
     max-width: 90rem;
     margin-right: auto;
   `,
-  xl: css`
+  large: css`
     max-width: 120rem;
     margin-right: auto;
   `,
@@ -19,7 +19,7 @@ const Container = styled.div`
 `;
 
 Container.defaultProps = {
-  size: "lg",
+  size: "large",
 };
 
 export default Container;
