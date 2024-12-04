@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import { formatCurrency } from "../../utils/helpers";
 import { useDeleteCabin } from "./useDeleteCabin";
+import { useCreateCabin } from "./useCreateCabin";
 import Button from "../../ui/Button";
 import ButtonGroup from "../../ui/ButtonGroup";
-import CreateEditCabinForm from "./CreateEditCabinForm";
+import CreateUpdateCabinForm from "./CreateUpdateCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -48,16 +50,31 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const { isDeleting, deleteCabin } = useDeleteCabin();
   const [showForm, setShowForm] = useState(false);
+
+  const { createCabin, isCreating } = useCreateCabin();
+  const { isDeleting, deleteCabin } = useDeleteCabin();
+
   const {
     id: cabinId,
     name,
     maxCapacity,
     regularPrice,
     discount,
+    description,
     image,
   } = cabin;
+
+  function handleDuplicate() {
+    createCabin({
+      name: `${name}-copy`,
+      maxCapacity,
+      regularPrice,
+      discount,
+      description,
+      image,
+    });
+  }
 
   return (
     <>
@@ -73,23 +90,29 @@ function CabinRow({ cabin }) {
         )}
         <ButtonGroup>
           <Button
-            size="small"
             variation="secondary"
-            onClick={() => setShowForm((show) => !show)}
+            onClick={handleDuplicate}
+            disabled={isDeleting || isCreating}
           >
-            Edit
+            <HiSquare2Stack />
           </Button>
           <Button
-            size="small"
+            variation="secondary"
+            onClick={() => setShowForm((show) => !show)}
+            disabled={isDeleting || isCreating}
+          >
+            <HiPencil />
+          </Button>
+          <Button
             variation="secondary"
             onClick={() => deleteCabin(cabinId)}
-            disabled={isDeleting}
+            disabled={isDeleting || isCreating}
           >
-            Delete
+            <HiTrash />
           </Button>
         </ButtonGroup>
       </TableRow>
-      {showForm && <CreateEditCabinForm cabinToEdit={cabin} />}
+      {showForm && <CreateUpdateCabinForm cabinToUpdate={cabin} />}
     </>
   );
 }
@@ -101,6 +124,7 @@ CabinRow.propTypes = {
     maxCapacity: PropTypes.number,
     regularPrice: PropTypes.number,
     discount: PropTypes.number,
+    description: PropTypes.string,
     image: PropTypes.string,
   }),
 };
