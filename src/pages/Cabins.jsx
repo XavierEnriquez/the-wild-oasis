@@ -4,9 +4,9 @@ import CabinTable from "../features/cabins/CabinTable";
 import Heading from "../ui/Heading";
 import Row from "../ui/Row";
 import Button from "../ui/Button";
-import Container from "../ui/container";
+import Container from "../ui/Container";
 import ButtonGroup from "../ui/ButtonGroup";
-import CreateEditCabinForm from "../features/cabins/CreateEditCabinForm";
+import CreateUpdateCabinForm from "../features/cabins/CreateUpdateCabinForm";
 
 function Cabins() {
   const [showForm, setShowForm] = useState(false);
@@ -30,7 +30,7 @@ function Cabins() {
             Add new cabin
           </Button>
         </div>
-        {showForm && <CreateEditCabinForm />}
+        {showForm && <CreateUpdateCabinForm />}
       </Row>
     </Container>
   );
