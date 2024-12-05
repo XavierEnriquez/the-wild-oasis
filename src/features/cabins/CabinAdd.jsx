@@ -22,7 +22,7 @@ import Modal from "../../ui/Modal";
 // }
 
 // V-2 CabinAdd as a Compound component
-// Multiple windows can be open by naming them each one differently and referencing them by name
+// Multiple windows can be open by referencing them by name
 function CabinAdd() {
   return (
     <Modal>
