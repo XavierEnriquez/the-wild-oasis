@@ -1,4 +1,12 @@
 import PropTypes from "prop-types";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
@@ -52,24 +60,74 @@ const Button = styled.button`
   }
 `;
 
+const ModalContext = createContext();
+
+// V-2 Modal with Context
+function Modal({ children }) {
+  const [opensWindow, setOpensWindow] = useState("");
+
+  const close = () => setOpensWindow("");
+  const open = setOpensWindow;
+
+  return (
+    <ModalContext.Provider value={{ opensWindow, open, close }}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+
+function Open({ children, windowName }) {
+  const { open } = useContext(ModalContext);
+
+  return cloneElement(children, { onClick: () => open(windowName) });
+}
+
 // createPortal is not a React function but a Reactdom function. It can be used to solve a situation where the component's parent has an overflow: hidden, preventing whatever is inside the component to scroll. It can render the component in any other place without taking it out of the component tree. In this case the the document.body is the portal target where the modal will be rendered, but any other component in the document tree can also be targeted.
-function Modal({ children, onClose }) {
+function Window({ children, name }) {
+  const { opensWindow, close } = useContext(ModalContext);
+
+  const ref = useRef();
+
+  useEffect(
+    function () {
+      function handleOutsideClick(e) {
+        if (ref.current && !ref.current.contains(e.target)) {
+          close();
+        }
+      }
+      document.addEventListener("click", handleOutsideClick, true);
+
+      return () =>
+        document.removeEventListener("click", handleOutsideClick, true);
+    },
+    [close]
+  );
+
+  if (name !== opensWindow) return null;
+
   return createPortal(
     <Overlay>
-      <StyledModal>
-        <Button onClick={onClose}>
+      <StyledModal ref={ref}>
+        <Button onClick={close}>
           <HiXMark />
         </Button>
-        <div>{children}</div>
+        <div>{cloneElement(children, { onCloseModal: close })}</div>
       </StyledModal>
     </Overlay>,
     document.body
   );
 }
 
+Modal.Open = Open;
+Modal.Window = Window;
+
 Modal.propTypes = {
-  children: PropTypes.element,
-  onClose: PropTypes.func,
+  children: PropTypes.any,
+};
+
+Window.propTypes = {
+  children: PropTypes.any,
+  name: PropTypes.string,
 };
 
 export default Modal;
