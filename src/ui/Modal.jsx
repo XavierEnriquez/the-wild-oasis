@@ -1,3 +1,6 @@
+import PropTypes from "prop-types";
+import { createPortal } from "react-dom";
+import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
 
 const StyledModal = styled.div`
@@ -48,3 +51,25 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+// createPortal is not a React function but a Reactdom function. It can be used to solve a situation where the component's parent has an overflow: hidden, preventing whatever is inside the component to scroll. It can render the component in any other place without taking it out of the component tree. In this case the the document.body is the portal target where the modal will be rendered, but any other component in the document tree can also be targeted.
+function Modal({ children, onClose }) {
+  return createPortal(
+    <Overlay>
+      <StyledModal>
+        <Button onClick={onClose}>
+          <HiXMark />
+        </Button>
+        <div>{children}</div>
+      </StyledModal>
+    </Overlay>,
+    document.body
+  );
+}
+
+Modal.propTypes = {
+  children: PropTypes.element,
+  onClose: PropTypes.func,
+};
+
+export default Modal;
