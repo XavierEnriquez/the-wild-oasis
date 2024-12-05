@@ -10,7 +10,7 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
 
-function CreateUpdateCabinForm({ cabinToUpdate = {} }) {
+function CreateUpdateCabinForm({ cabinToUpdate = {}, onCloseModal }) {
   // If cabinToUpdate id is present then this is a cabin edit else is a new cabin
   const { id: toEditId, ...toEditValues } = cabinToUpdate;
   const isEditSession = Boolean(toEditId);
@@ -34,14 +34,20 @@ function CreateUpdateCabinForm({ cabinToUpdate = {} }) {
       updateCabin(
         { editData: { ...data, image }, id: toEditId },
         {
-          onSuccess: () => reset(),
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
         }
       );
     else
       createCabin(
         { ...data, image: data.image[0] },
         {
-          onSuccess: () => reset(),
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
         }
       );
   }
@@ -51,7 +57,10 @@ function CreateUpdateCabinForm({ cabinToUpdate = {} }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      type={onCloseModal ? "modal" : "form"}
+      onSubmit={handleSubmit(onSubmit, onError)}
+    >
       <FormRow label="name" error={errors?.name?.message}>
         <Input
           type="text"
@@ -134,7 +143,12 @@ function CreateUpdateCabinForm({ cabinToUpdate = {} }) {
       <FormRow>
         {/* type is an HTML attribute! */}
 
-        <Button variation="secondary" type="reset" disabled={isProcessing}>
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+          disabled={isProcessing}
+        >
           Cancel
         </Button>
         <Button disabled={isProcessing}>
@@ -154,6 +168,7 @@ CreateUpdateCabinForm.propTypes = {
     discount: PropTypes.number,
     image: PropTypes.string,
   }),
+  onCloseModal: PropTypes.func,
 };
 
 export default CreateUpdateCabinForm;
