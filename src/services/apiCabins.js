@@ -17,13 +17,13 @@ export async function deleteCabinFn(id) {
   return data;
 }
 
-// function receives either the newcabin data or an id for the cabin to be edited
-export async function createUpdateCabinFn(newCabin, id) {
+// function receives either the new cabin data or an id for the cabin to be edited
+export async function createUpdateCabinFn(id, cabinData) {
   // Checking for existing image path
-  const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
+  const hasImagePath = cabinData.image?.startsWith?.(supabaseUrl);
 
   // Using Math.random to create a unique image name to prevent duplicates in the database
-  const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
+  const imageName = `${Math.random()}-${cabinData.image.name}`.replaceAll(
     "/",
     ""
   );
@@ -32,7 +32,7 @@ export async function createUpdateCabinFn(newCabin, id) {
   // Url path required to display the hosted image files in database
   // if hasImagePath use path else create new path
   const imagePath = hasImagePath
-    ? newCabin.image
+    ? cabinData.image
     : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
 
   // 1. CREATE/EDIT cabins
@@ -40,14 +40,11 @@ export async function createUpdateCabinFn(newCabin, id) {
   let dbQuery = supabase.from("cabins");
 
   // 1 B) CREATE
-  if (!id) dbQuery = dbQuery.insert([{ ...newCabin, image: imagePath }]);
+  if (!id) dbQuery = dbQuery.insert([{ ...cabinData, image: imagePath }]);
 
   // 1 C) EDIT
   if (id)
-    dbQuery = dbQuery
-      .update({ ...newCabin, image: imagePath })
-      .eq("id", id)
-      .select();
+    dbQuery = dbQuery.update({ ...cabinData, image: imagePath }).eq("id", id);
 
   const { data, error } = await dbQuery.select().single();
 
@@ -63,7 +60,7 @@ export async function createUpdateCabinFn(newCabin, id) {
   // if new entry is succesfull and ther is no existing image path, then the image file is uploaded to the image storage bucket
   const { error: storageError } = await supabase.storage
     .from("cabin-images")
-    .upload(imageName, newCabin.image);
+    .upload(imageName, cabinData.image);
 
   // If can not upload the cabin image then delete the cabin entry just created
   if (storageError) {
