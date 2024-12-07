@@ -32,7 +32,7 @@ function CreateUpdateCabinForm({ cabinToUpdate = {}, onCloseModal }) {
 
     if (isEditSession)
       updateCabin(
-        { editData: { ...data, image }, id: toEditId },
+        { newCabinData: { ...data, image }, id: toEditId },
         {
           onSuccess: () => {
             reset();
@@ -141,8 +141,7 @@ function CreateUpdateCabinForm({ cabinToUpdate = {}, onCloseModal }) {
       </FormRow>
 
       <FormRow>
-        {/* type is an HTML attribute! */}
-
+        {/* button type is an HTML attribute! */}
         <Button
           variation="secondary"
           type="reset"
@@ -166,7 +165,7 @@ CreateUpdateCabinForm.propTypes = {
     maxCapacity: PropTypes.number,
     regularPrice: PropTypes.number,
     discount: PropTypes.number,
-    image: PropTypes.string,
+    image: PropTypes.any,
   }),
   onCloseModal: PropTypes.func,
 };
