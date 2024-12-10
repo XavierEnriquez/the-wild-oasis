@@ -11,6 +11,11 @@ import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
 
 function CreateUpdateCabinForm({ cabinToUpdate = {}, onCloseModal }) {
+  const { createCabin, isCreating } = useCreateCabin();
+  const { updateCabin, isEditing } = useUpdateCabin();
+
+  const isProcessing = isCreating || isEditing;
+
   // If cabinToUpdate id is present then this is a cabin edit else is a new cabin
   const { id: toEditId, ...toEditValues } = cabinToUpdate;
   const isEditSession = Boolean(toEditId);
@@ -22,13 +27,10 @@ function CreateUpdateCabinForm({ cabinToUpdate = {}, onCloseModal }) {
 
   const { errors } = formState;
 
-  const { createCabin, isCreating } = useCreateCabin();
-  const { updateCabin, isEditing } = useUpdateCabin();
-
-  const isProcessing = isCreating || isEditing;
-
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
+
+    console.log(data);
 
     if (isEditSession)
       updateCabin(
@@ -42,7 +44,7 @@ function CreateUpdateCabinForm({ cabinToUpdate = {}, onCloseModal }) {
       );
     else
       createCabin(
-        { ...data, image: data.image[0] },
+        { ...data, image: image },
         {
           onSuccess: () => {
             reset();
