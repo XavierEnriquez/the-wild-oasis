@@ -5,23 +5,11 @@ import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import { useDeleteCabin } from "./useDeleteCabin";
 import { useCreateCabin } from "./useCreateCabin";
-import Button from "../../ui/Button";
 import CreateUpdateCabinForm from "./CreateUpdateCabinForm";
-import ButtonGroup from "../../ui/ButtonGroup";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
-
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`;
+import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
 
 const Img = styled.img`
   display: block;
@@ -51,7 +39,7 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const { createCabin, isCreating } = useCreateCabin();
+  const { isCreating, createCabin } = useCreateCabin();
   const { isDeleting, deleteCabin } = useDeleteCabin();
 
   const {
@@ -77,7 +65,7 @@ function CabinRow({ cabin }) {
 
   return (
     <>
-      <TableRow>
+      <Table.Row>
         <Img src={image} />
         <Cabin>{name}</Cabin>
         <p>Fits up to {maxCapacity} guests</p>
@@ -87,40 +75,44 @@ function CabinRow({ cabin }) {
         ) : (
           <span>&mdash;</span>
         )}
-        <ButtonGroup>
-          <Button
-            variation="secondary"
-            onClick={handleDuplicate}
-            disabled={isDeleting || isCreating}
-          >
-            <HiSquare2Stack />
-          </Button>
-
+        <div>
           <Modal>
-            <Modal.Open windowName="update">
-              <Button variation="secondary" disabled={isDeleting || isCreating}>
-                <HiPencil />
-              </Button>
-            </Modal.Open>
-            <Modal.Window name="update">
-              <CreateUpdateCabinForm cabinToUpdate={cabin} />
-            </Modal.Window>
+            <Menus.Menu>
+              <Menus.Toggle id={cabinId} />
 
-            <Modal.Open windowName="delete">
-              <Button variation="secondary" disabled={isDeleting || isCreating}>
-                <HiTrash />
-              </Button>
-            </Modal.Open>
-            <Modal.Window name="delete">
-              <ConfirmDelete
-                resourceName="cabin"
-                onConfirm={() => deleteCabin(cabinId)}
-                disabled={isDeleting}
-              />
-            </Modal.Window>
+              <Menus.List id={cabinId}>
+                <Menus.Button
+                  onClick={handleDuplicate}
+                  icon={<HiSquare2Stack />}
+                  disabled={isCreating}
+                >
+                  Duplicate
+                </Menus.Button>
+
+                <Modal.Open windowName="update">
+                  <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+                </Modal.Open>
+
+                <Modal.Open windowName="delete">
+                  <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+                </Modal.Open>
+              </Menus.List>
+
+              <Modal.Window name="update">
+                <CreateUpdateCabinForm cabinToUpdate={cabin} />
+              </Modal.Window>
+
+              <Modal.Window name="delete">
+                <ConfirmDelete
+                  resourceName="cabin"
+                  onConfirm={() => deleteCabin(cabinId)}
+                  disabled={isDeleting}
+                />
+              </Modal.Window>
+            </Menus.Menu>
           </Modal>
-        </ButtonGroup>
-      </TableRow>
+        </div>
+      </Table.Row>
     </>
   );
 }
@@ -133,7 +125,7 @@ CabinRow.propTypes = {
     regularPrice: PropTypes.number,
     discount: PropTypes.number,
     description: PropTypes.string,
-    image: PropTypes.string,
+    image: PropTypes.any,
   }),
 };
 
