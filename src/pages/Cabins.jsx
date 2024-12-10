@@ -16,6 +16,7 @@ function Cabins() {
             <Button size="medium" variation="secondary">
               Filter
             </Button>
+
             <Button size="medium" variation="secondary">
               Sort
             </Button>
