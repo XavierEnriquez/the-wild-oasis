@@ -1,10 +1,9 @@
 import CabinTable from "../features/cabins/CabinTable";
 import Heading from "../ui/Heading";
 import Row from "../ui/Row";
-import Button from "../ui/Button";
 import Container from "../ui/Container";
 import CabinAdd from "../features/cabins/CabinAdd";
-import ButtonGroup from "../ui/ButtonGroup";
+import CabinTableOperations from "../features/cabins/CabinTableOperations";
 
 function Cabins() {
   return (
@@ -12,15 +11,7 @@ function Cabins() {
       <Row>
         <Row type="horizontal">
           <Heading as="h1">All cabins</Heading>
-          <ButtonGroup>
-            <Button size="medium" variation="secondary">
-              Filter
-            </Button>
-
-            <Button size="medium" variation="secondary">
-              Sort
-            </Button>
-          </ButtonGroup>
+          <CabinTableOperations />
         </Row>
         <CabinTable />
         <CabinAdd />
