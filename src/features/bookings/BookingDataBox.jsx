@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { format, isToday } from "date-fns";
 import {
   HiOutlineChatBubbleBottomCenterText,
@@ -183,5 +184,28 @@ function BookingDataBox({ booking }) {
     </StyledBookingDataBox>
   );
 }
+
+BookingDataBox.propTypes = {
+  booking: PropTypes.object,
+  created_at: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  numNights: PropTypes.number,
+  numGuests: PropTypes.number,
+  cabinPrice: PropTypes.number,
+  extrasPrice: PropTypes.number,
+  totalPrice: PropTypes.number,
+  hasBreakfast: PropTypes.bool,
+  observations: PropTypes.string,
+  isPaid: PropTypes.bool,
+  guests: PropTypes.shape({
+    fullName: PropTypes.string,
+    email: PropTypes.string,
+    country: PropTypes.string,
+    countryFlag: PropTypes.string,
+    nationalID: PropTypes.string,
+  }),
+  cabins: PropTypes.shape({ name: PropTypes.string }),
+};
 
 export default BookingDataBox;
