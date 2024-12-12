@@ -13,6 +13,7 @@ const StyledFilter = styled.div`
 `;
 
 const FilterButton = styled.button`
+  min-width: 6rem;
   background-color: var(--color-grey-0);
   border: none;
 
@@ -43,6 +44,8 @@ function Filter({ filterParam, options }) {
 
   function handleFilterClick(value) {
     searchParams.set(filterParam, value);
+    setSearchParams(searchParams);
+    searchParams.set("page", 1);
     setSearchParams(searchParams);
   }
   return (
