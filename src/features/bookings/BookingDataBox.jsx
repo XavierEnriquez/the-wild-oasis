@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 import { format, isToday } from "date-fns";
 import {
   HiOutlineChatBubbleBottomCenterText,
@@ -109,7 +110,7 @@ function BookingDataBox({ booking }) {
     startDate,
     endDate,
     numNights,
-    numGuests,
+    numGuest,
     cabinPrice,
     extrasPrice,
     totalPrice,
@@ -126,7 +127,8 @@ function BookingDataBox({ booking }) {
         <div>
           <HiOutlineHomeModern />
           <p>
-            {numNights} nights in Cabin <span>{cabinName}</span>
+            {numNights} nights - <span>{numGuest}</span> guests, in Cabin{" "}
+            <span>{cabinName}</span>
           </p>
         </div>
 
@@ -143,7 +145,7 @@ function BookingDataBox({ booking }) {
         <Guest>
           {countryFlag && <Flag src={countryFlag} alt={`Flag of ${country}`} />}
           <p>
-            {guestName} {numGuests > 1 ? `+ ${numGuests - 1} guests` : ""}
+            {guestName} {numGuest > 1 ? `+ ${numGuest - 1} guests` : ""}
           </p>
           <span>&bull;</span>
           <p>{email}</p>
@@ -164,8 +166,8 @@ function BookingDataBox({ booking }) {
           {hasBreakfast ? "Yes" : "No"}
         </DataItem>
 
-        <Price isPaid={isPaid}>
-          <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
+        <Price $isPaid={isPaid}>
+          <DataItem icon={<HiOutlineCurrencyDollar />} label={`Booking Total`}>
             {formatCurrency(totalPrice)}
 
             {hasBreakfast &&
@@ -174,7 +176,7 @@ function BookingDataBox({ booking }) {
               )} breakfast)`}
           </DataItem>
 
-          <p>{isPaid ? "Paid" : "Will pay at property"}</p>
+          <p>{isPaid ? "Paid" : "Will pay at check in"}</p>
         </Price>
       </Section>
 
@@ -184,28 +186,5 @@ function BookingDataBox({ booking }) {
     </StyledBookingDataBox>
   );
 }
-
-BookingDataBox.propTypes = {
-  booking: PropTypes.object,
-  created_at: PropTypes.string,
-  startDate: PropTypes.string,
-  endDate: PropTypes.string,
-  numNights: PropTypes.number,
-  numGuests: PropTypes.number,
-  cabinPrice: PropTypes.number,
-  extrasPrice: PropTypes.number,
-  totalPrice: PropTypes.number,
-  hasBreakfast: PropTypes.bool,
-  observations: PropTypes.string,
-  isPaid: PropTypes.bool,
-  guests: PropTypes.shape({
-    fullName: PropTypes.string,
-    email: PropTypes.string,
-    country: PropTypes.string,
-    countryFlag: PropTypes.string,
-    nationalID: PropTypes.string,
-  }),
-  cabins: PropTypes.shape({ name: PropTypes.string }),
-};
 
 export default BookingDataBox;
