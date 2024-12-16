@@ -143,11 +143,11 @@ Menus.propTypes = {
 };
 
 Toggle.propTypes = {
-  id: PropTypes.number,
+  id: PropTypes.any,
 };
 
 List.propTypes = {
-  id: PropTypes.number,
+  id: PropTypes.any,
   children: PropTypes.node,
 };
 
