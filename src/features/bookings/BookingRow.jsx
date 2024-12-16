@@ -1,15 +1,26 @@
+/* eslint-disable react/prop-types */
+import {
+  HiArrowDownOnSquare,
+  HiArrowUpOnSquare,
+  HiEye,
+  HiTrash,
+} from "react-icons/hi2";
 import { format, isToday } from "date-fns";
-import { HiArrowDownOnSquare, HiEye } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 
 import { formatCurrency } from "../../utils/helpers";
+import { useBookingDelete } from "./useBookingDelete";
+import { useCheckout } from "../check-in-out/useCheckout";
 import { formatDistanceFromNow } from "../../utils/helpers";
 
 import Tag from "../../ui/Tag";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import ConfirmCheckout from "../../ui/ConfirmCheckout";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -41,11 +52,11 @@ const Amount = styled.div`
 function BookingRow({
   booking: {
     id: bookingId,
-    created_at,
+    // created_at,
     startDate,
     endDate,
     numNights,
-    numGuest,
+    // numGuest,
     totalPrice,
     status,
     guests: { fullName: guestName, email },
@@ -60,7 +71,8 @@ function BookingRow({
 
   const navigate = useNavigate();
 
-  console.log(bookingId, created_at, numGuest);
+  const { checkout, isCheckingOut } = useCheckout();
+  const { deleteBooking, isDeleting } = useBookingDelete();
 
   return (
     <Table.Row>
@@ -87,48 +99,76 @@ function BookingRow({
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
-
-      <Menus.Menu>
-        <Menus.Toggle id={bookingId} />
-        <Menus.List id={bookingId}>
-          <Menus.Button
-            icon={<HiEye />}
-            onClick={() => navigate(`/bookings/${bookingId}`)}
-          >
-            See details
-          </Menus.Button>
-          {status === "unconfirmed" && (
+      <Modal>
+        <Menus.Menu>
+          <Menus.Toggle id={bookingId} />
+          <Menus.List id={bookingId}>
             <Menus.Button
-              icon={<HiArrowDownOnSquare />}
-              onClick={() => navigate(`/checkin/${bookingId}`)}
+              icon={<HiEye />}
+              onClick={() => navigate(`/bookings/${bookingId}`)}
             >
-              Check in
+              See details
             </Menus.Button>
-          )}
-        </Menus.List>
-      </Menus.Menu>
+            {status === "unconfirmed" && (
+              <Menus.Button
+                icon={<HiArrowDownOnSquare />}
+                onClick={() => navigate(`/checkin/${bookingId}`)}
+              >
+                Check in
+              </Menus.Button>
+            )}
+            {status === "checked-in" && (
+              <Modal.Open windowName="booking-checkout">
+                <Menus.Button icon={<HiArrowUpOnSquare />}>
+                  Check out
+                </Menus.Button>
+              </Modal.Open>
+            )}
+
+            <Modal.Open windowName="booking-delete">
+              <Menus.Button icon={<HiTrash />}>Delete booking</Menus.Button>
+            </Modal.Open>
+          </Menus.List>
+
+          <Modal.Window name="booking-checkout">
+            <ConfirmCheckout
+              resourceName={`booking ${bookingId}`}
+              onConfirm={() => checkout(bookingId)}
+              disabled={isCheckingOut}
+            />
+          </Modal.Window>
+
+          <Modal.Window name="booking-delete">
+            <ConfirmDelete
+              resourceName="booking"
+              onConfirm={() => deleteBooking(bookingId)}
+              disabled={isDeleting}
+            />
+          </Modal.Window>
+        </Menus.Menu>
+      </Modal>
     </Table.Row>
   );
 }
 
-BookingRow.propTypes = {
-  booking: PropTypes.shape({
-    id: PropTypes.number,
-    created_at: PropTypes.string,
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
-    numNights: PropTypes.number,
-    numGuest: PropTypes.number,
-    totalPrice: PropTypes.number,
-    status: PropTypes.string,
-    guests: PropTypes.shape({
-      fullName: PropTypes.string,
-      email: PropTypes.string,
-    }),
-    cabins: PropTypes.shape({
-      name: PropTypes.string,
-    }),
-  }),
-};
+// BookingRow.propTypes = {
+//   booking: PropTypes.shape({
+//     id: PropTypes.number,
+//     created_at: PropTypes.string,
+//     startDate: PropTypes.string,
+//     endDate: PropTypes.string,
+//     numNights: PropTypes.number,
+//     numGuest: PropTypes.number,
+//     totalPrice: PropTypes.number,
+//     status: PropTypes.string,
+//     guests: PropTypes.shape({
+//       fullName: PropTypes.string,
+//       email: PropTypes.string,
+//     }),
+//     cabins: PropTypes.shape({
+//       name: PropTypes.string,
+//     }),
+//   }),
+// };
 
 export default BookingRow;
