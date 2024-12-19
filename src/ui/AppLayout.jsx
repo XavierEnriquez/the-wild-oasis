@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import styled from "styled-components";
 
 const StyledAppLayout = styled.div`
+  background-color: var(--color-grey-50);
   display: grid;
   grid-template-columns: 26rem 1fr;
   grid-template-rows: auto 1fr;
