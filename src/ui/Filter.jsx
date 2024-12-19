@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+/* eslint-disable react/prop-types */
 import { useSearchParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 
@@ -54,7 +54,7 @@ function Filter({ filterParam, options }) {
         <FilterButton
           key={option.value}
           onClick={() => handleFilterClick(option.value)}
-          active={option.value === currentFilter}
+          $active={option.value === currentFilter}
           disabled={option.value === currentFilter}
         >
           {option.label}
@@ -63,15 +63,5 @@ function Filter({ filterParam, options }) {
     </StyledFilter>
   );
 }
-
-Filter.propTypes = {
-  filterParam: PropTypes.string,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string,
-      // Add any other properties that your option objects should have
-    })
-  ),
-};
 
 export default Filter;
