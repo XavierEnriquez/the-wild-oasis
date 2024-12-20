@@ -69,7 +69,7 @@ export async function getBookingsAfterDateFn(date) {
   return data;
 }
 
-// Returns all STAYS that are were created after the given date
+// Returns all STAYS that were created after the given date
 export async function getStaysAfterDateFn(date) {
   const { data, error } = await supabase
     .from("bookings")
