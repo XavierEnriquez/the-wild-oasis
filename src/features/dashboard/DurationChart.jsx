@@ -1,4 +1,16 @@
+/* eslint-disable react/prop-types */
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import styled from "styled-components";
+
+import Heading from "../../ui/Heading";
+import { useDarkMode } from "../../context/useDarkMode";
 
 const ChartBox = styled.div`
   /* Box */
@@ -65,42 +77,42 @@ const startDataDark = [
   {
     duration: "1 night",
     value: 0,
-    color: "#b91c1c",
+    color: "#e72525",
   },
   {
     duration: "2 nights",
     value: 0,
-    color: "#c2410c",
+    color: "#e3490c",
   },
   {
     duration: "3 nights",
     value: 0,
-    color: "#a16207",
+    color: "#ee900d",
   },
   {
     duration: "4-5 nights",
     value: 0,
-    color: "#4d7c0f",
+    color: "#5d9514",
   },
   {
     duration: "6-7 nights",
     value: 0,
-    color: "#15803d",
+    color: "#20a04f",
   },
   {
     duration: "8-14 nights",
     value: 0,
-    color: "#0f766e",
+    color: "#16a397",
   },
   {
     duration: "15-21 nights",
     value: 0,
-    color: "#1d4ed8",
+    color: "#3162e9",
   },
   {
     duration: "21+ nights",
     value: 0,
-    color: "#7e22ce",
+    color: "#912ee7",
   },
 ];
 
@@ -130,3 +142,51 @@ function prepareData(startData, stays) {
 
   return data;
 }
+
+function DurationChart({ confirmedStays }) {
+  const { isDarkMode } = useDarkMode();
+
+  const startData = isDarkMode ? startDataDark : startDataLight;
+
+  const data = prepareData(startData, confirmedStays);
+
+  return (
+    <ChartBox>
+      <Heading as="h2">Stay duration summary</Heading>
+
+      <ResponsiveContainer width="100%" height="80%">
+        <PieChart>
+          <Pie
+            nameKey="duration"
+            dataKey="value"
+            data={data}
+            innerRadius="70%"
+            outerRadius="90%"
+            cx="40%"
+            cy="50%"
+            paddingAngle={3}
+          >
+            {data.map((entry) => (
+              <Cell
+                fill={entry.color}
+                stroke={entry.color}
+                key={entry.duration}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend
+            layout="vertical"
+            verticalAlign="middle"
+            align="right"
+            iconType="circle"
+            iconSize="1.5rem"
+            formatter={(value) => ` ${value}`}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </ChartBox>
+  );
+}
+
+export default DurationChart;
