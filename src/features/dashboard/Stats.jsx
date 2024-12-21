@@ -20,7 +20,7 @@ function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
   const checkins = confirmedStays?.length;
 
   // This formula is for this demo app and may NOT be accuarte for a true occupancy rate.
-  // Occupancy Rate = (Number of booked nights in a period of (7, 30, or 90 days)) / (Total Number of daily Available cabins * same period of (7, 30, or 90 days)) × 100
+  // Occupancy Rate = (Number of booked nights) / (Total Number of daily Available cabins * period of (7, 30, or 90 days)) × 100
   const ocupancyRate = Math.round(
     (confirmedStays.reduce((acc, curr) => acc + curr.numNights, 0) /
       (cabinCount * numDays)) *
