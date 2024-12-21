@@ -1,5 +1,19 @@
+/* eslint-disable react/prop-types */
 import styled from "styled-components";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
 import DashboardBox from "./DashboardBox";
+import Heading from "../../ui/Heading";
+import { useDarkMode } from "../../context/useDarkMode";
+import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
@@ -10,7 +24,7 @@ const StyledSalesChart = styled(DashboardBox)`
     stroke: var(--color-grey-300);
   }
 `;
-
+/*
 const fakeData = [
   { label: "Jan 09", totalSales: 480, extrasSales: 20 },
   { label: "Jan 10", totalSales: 580, extrasSales: 100 },
@@ -41,19 +55,89 @@ const fakeData = [
   { label: "Feb 04", totalSales: 1500, extrasSales: 500 },
   { label: "Feb 05", totalSales: 1400, extrasSales: 600 },
   { label: "Feb 06", totalSales: 1450, extrasSales: 400 },
-];
+];*/
 
-const isDarkMode = true;
-const colors = isDarkMode
-  ? {
-      totalSales: { stroke: "#4f46e5", fill: "#4f46e5" },
-      extrasSales: { stroke: "#22c55e", fill: "#22c55e" },
-      text: "#e5e7eb",
-      background: "#18212f",
-    }
-  : {
-      totalSales: { stroke: "#4f46e5", fill: "#c7d2fe" },
-      extrasSales: { stroke: "#16a34a", fill: "#dcfce7" },
-      text: "#374151",
-      background: "#fff",
+function SalesChart({ bookings, numDays }) {
+  const { isDarkMode } = useDarkMode();
+
+  const daysArr = eachDayOfInterval({
+    start: subDays(new Date(), numDays - 1),
+    end: new Date(),
+  });
+
+  if (!bookings) return null;
+
+  const chartData = daysArr.map((date) => {
+    return {
+      label: format(date, "MMMdd"),
+      totalSales: bookings
+        .filter((booking) => isSameDay(date, new Date(booking.created_at)))
+        .reduce((acc, cur) => acc + cur.totalPrice, 0),
+      extrasSales: bookings
+        .filter((booking) => isSameDay(date, new Date(booking.created_at)))
+        .reduce((acc, cur) => acc + cur.extrasPrice, 0),
     };
+  });
+
+  // const isDarkMode = true;
+  const colors = isDarkMode
+    ? {
+        totalSales: { stroke: "#4f46e5", fill: "#4f46e5" },
+        extrasSales: { stroke: "#22c55e", fill: "#22c55e" },
+        text: "#e5e7eb",
+        background: "#18212f",
+      }
+    : {
+        totalSales: { stroke: "#4f46e5", fill: "#c7d2fe" },
+        extrasSales: { stroke: "#16a34a", fill: "#dcfce7" },
+        text: "#374151",
+        background: "#fff",
+      };
+  return (
+    <StyledSalesChart>
+      <Heading as="h2">
+        Sales ⟨ {format(daysArr.at(0), "MMM dd yyyy")} &mdash;{" "}
+        {format(daysArr.at(-1), "MMM dd yyyy")} ⟩
+      </Heading>
+      <ResponsiveContainer height={300} width="100%">
+        <AreaChart data={chartData}>
+          <XAxis
+            dataKey="label"
+            tick={{ fill: colors.text }}
+            tickLine={{ stroke: colors.text }}
+          />
+          <YAxis
+            unit="$"
+            tick={{ fill: colors.text }}
+            tickLine={{ stroke: colors.text }}
+          />
+          <CartesianGrid
+            strokeDasharray="4"
+            contentStyle={{ backgroundColor: colors.background }}
+          />
+          <Tooltip contentStyle={{ backgroundColor: colors.background }} />
+          <Area
+            name="Total sales"
+            unit="$"
+            dataKey="totalSales"
+            type="monotone"
+            stroke={colors.totalSales.stroke}
+            strokeWidth={2}
+            fill={colors.totalSales.fill}
+          />
+          <Area
+            name="Extras sales"
+            unit="$"
+            dataKey="extrasSales"
+            type="monotone"
+            stroke={colors.extrasSales.stroke}
+            strokeWidth={2}
+            fill={colors.extrasSales.fill}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </StyledSalesChart>
+  );
+}
+
+export default SalesChart;
