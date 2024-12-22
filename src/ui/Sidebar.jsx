@@ -13,6 +13,8 @@ const StyledSidebar = styled.aside`
   gap: 3.2rem;
 `;
 
+// Demo data uploaded to supabase with the <Uploader/> component.
+// Remove when ready to deploy to production.
 function Sidebar() {
   return (
     <StyledSidebar>
