@@ -45,7 +45,7 @@ function BookingDetail() {
   };
 
   return (
-    <>
+    <Row type="vertical">
       <Row type="horizontal">
         <HeadingGroup>
           <Heading as="h1">Booking #{bookingId}</Heading>
@@ -103,7 +103,7 @@ function BookingDetail() {
           Back
         </Button>
       </ButtonGroup>
-    </>
+    </Row>
   );
 }
 
